@@ -284,7 +284,19 @@ if (!$columns && support("table")) {
 			if ($page && $jush == "oracle") {
 				unset($row["RNUM"]);
 			}
-			$rows[] = $row;
+			// reorder created/updated columns to end of view
+			$reorder = ['created', 'updated', 'created_by', 'updated_by', 'createdBy', 'updatedBy'];
+			$newColumns = [];
+			$lastColumns = [];
+			foreach ($row as $key => $val) {
+				if (in_array($key, $reorder)) {
+					$lastColumns[$key] = $val;
+				}
+				else {
+					$newColumns[$key] = $val;
+				}
+			}
+			$rows[] = array_merge($newColumns, $lastColumns);
 		}
 
 		// use count($rows) without LIMIT, COUNT(*) without grouping, FOUND_ROWS otherwise (slowest)
